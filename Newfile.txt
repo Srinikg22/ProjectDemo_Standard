@@ -1,15 +1,15 @@
-﻿//def ReleaseDir = "c:\inetpub\wwwroot"
+﻿//def ReleaseDir = "c:\inetpub\wwwroot\EMRDev"
 pipeline {
 			agent any
 			stages {
 				stage('Source'){
 					steps{
-						checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '825fc4d4-4161-4170-9587-28a936f82af6', url: 'https://github.com/Srinikg22/ProjectDemo_Standard.git']]])
+						checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '825fc4d4-4161-4170-9587-28a936f82af6', url: 'https://github.com/Srinikg22/JenkinsProject.git']]])
 					}
 				}
 				stage('Build') {
     					steps {
-    					    bat "\"${tool 'MSBuild'}\" AspDotNetJenkins.sln /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:SkipInvalidConfigurations=true /t:build /p:Configuration=Release /p:Platform=\"Any CPU\" /p:DeleteExistingFiles=True /p:publishUrl=c:\\inetpub\\wwwroot"
+    					    bat "\"${tool 'MSBuild'}\\msbuild\" C:\\Users\\user\\Downloads\\EMR_Dev-develop\\EMR_Dev-develop\\Emr_Dev_New.sln /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:SkipInvalidConfigurations=true /t:build /p:Configuration=Release /p:Platform=\"Any CPU\" /p:DeleteExistingFiles=True /p:publishUrl=C:\\inetpub\\wwwroot\\EMRDev"
     					}
 				}
 			}

@@ -1,4 +1,4 @@
-﻿//def ReleaseDir = "c:\inetpub\wwwroot"
+﻿def ReleaseDir = "c:\\inetpub\\wwwroot"
 pipeline {
 			agent any
 			stages {

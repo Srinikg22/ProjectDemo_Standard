@@ -1,4 +1,4 @@
-﻿//def ReleaseDir = "c:\inetpub\wwwroot\EMRDev"
+﻿
 pipeline {
 			agent any
 			stages {

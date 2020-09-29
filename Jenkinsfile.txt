@@ -1,5 +1,4 @@
-﻿def ReleaseDir = "c:\\inetpub\\wwwroot"
-pipeline {
+﻿pipeline {
 			agent any
 			stages {
 				stage('Source'){

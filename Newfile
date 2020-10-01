@@ -1,16 +1,36 @@
-﻿//def ReleaseDir = "c:\inetpub\wwwroot\EMRDev"
-pipeline {
-			agent any
-			stages {
-				stage('Source'){
-					steps{
-						checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '825fc4d4-4161-4170-9587-28a936f82af6', url: 'https://github.com/Srinikg22/JenkinsProject.git']]])
-					}
-				}
-				stage('Build') {
-    					steps {
-    					    bat "\"${tool 'MSBuild'}\\msbuild\" C:\\Users\\user\\Downloads\\EMR_Dev-develop\\EMR_Dev-develop\\Emr_Dev_New.sln /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:SkipInvalidConfigurations=true /t:build /p:Configuration=Release /p:Platform=\"Any CPU\" /p:DeleteExistingFiles=True /p:publishUrl=C:\\inetpub\\wwwroot\\EMRDev"
-    					}
-				}
-			}
+﻿node {
+ def MsDeployPath = "C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe"
+ def slnPath = "${WORKSPACE}\\CalendarLib"
+ def IISWebPath = "c:\\inetpub\\wwwroot\\EMRDev"
+ def server_admin_userName = "Administrator"
+ def server_admin_pwd = "Welcome@123"
+ def server_dev = "VDL75"
+ def projPath = "C:\\Users\\user\\source\\repos\\ProjectDemo_Standard"
+ def packagePath = "DemoPipeline"
+ def projName = "ProjectDemo_Standard.sln"
+
+ try {	
+   stage('Source'){
+		checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '825fc4d4-4161-4170-9587-28a936f82af6', url: 'https://github.com/Srinikg22/JenkinsProject.git']]])
+   }
+
+   stage('Build') {
+		bat "\"${tool 'MSBuild'}\\msbuild\" \"${projPath}\\${projName}\" /T:Build /p:Configuration=Release /p:OutputPath=\"obj\\Release\" /p:DeployIIsAppPath=\"${IISWebPath}\""
+   } 
+   stage('Deploy') {
+        bat " \"${MsDeployPath}\" -verb:sync -source:contentPath=\"${slnPath}\\Appointments.cs\" -dest:contentPath=\"${IISWebPath}/Appointments.cs\",computerName=${server_dev},userName=${server_admin_userName},passWord=${server_admin_pwd} -allowUntrusted=true" 			
+   }
+
+  notify('Success')
+ } catch (err) {
+  notify("Error ${err}")
+  currentBuild.result = 'FAILURE'
+ }
+}
+
+def notify(status) {
+ emailext(to: "vasansrini92@gmail.com",
+  subject: "${status}: Deployment job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+  body: "<p>${status}: Deployment Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p> <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>"
+  )
 }
